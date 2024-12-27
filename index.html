@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+</head>
+<body>
+    <div id="interactive" style="width: 100%; height: 100%; border: 1px solid black;"></div>
+    <button id="btnScan" onclick="scanNewCode() ">Scan</button>
+    <div id="result"></div>
+    <div id="result-type"></div>
+    <div id="error"></div>
+
+    <script src="quagga.min.js"></script>
+
+    
+
+    <script>
+        getElementById('btnScan').addEventListener(Click, scanNewCode());
+
+        function scanNewCode(){
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#interactive'),
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ]
+                }
+            }, function(err) {
+                if (err) {
+                    console.log(err);
+                    document.getElementById('error').innerText = err;
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                document.getElementById('error').innerText = "Initialization finished. Ready to start";
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(data) {
+            console.log(data);
+            document.getElementById('result').innerText = `Detected barcode: ${data.codeResult.code}`;
+            document.getElementById('result-type').innerText = `Forma Type: ${data.codeResult.format}`;
+            Quagga.stop();
+        });
+        }
+
+        
+    </script>
+</body>
+</html>
